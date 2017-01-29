@@ -7,6 +7,7 @@ import org.k.data.Location;
 import org.k.data.Weather;
 import org.k.exception.UnknownException;
 import org.k.exception.WeatherServiceException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -27,19 +28,20 @@ public class AccuWeatherApiService {
     private static final String GET_LOCATION_URL = "http://dataservice.accuweather.com/locations/v1/";
     private static final String SEARCH = "/search";
     private static final String GET_WEATHER_URL = "http://dataservice.accuweather.com/currentconditions/v1/";
-    private final String API_KEY;
+    private final String apiKey;
     private final ObjectMapper objectMapper;
 
-    public AccuWeatherApiService(ObjectMapper objectMapper) {
+    public AccuWeatherApiService(@Value("${api.key}") String apiKey,
+                                 ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        API_KEY = System.getenv("API_KEY");
+        this.apiKey = apiKey;
     }
 
     public Optional<Location> getLocation(String countryCode, String city) throws IOException {
         String url = GET_LOCATION_URL + countryCode + SEARCH;
         String charset = StandardCharsets.UTF_8.name();
         String query = String.format("apikey=%s&q=%s",
-                URLEncoder.encode(API_KEY, charset),
+                URLEncoder.encode(apiKey, charset),
                 URLEncoder.encode(city, charset));
 
         URLConnection connection = getUrlConnection(url, query);
@@ -60,7 +62,7 @@ public class AccuWeatherApiService {
     public Optional<Weather> getWeather(String locationKey) throws IOException {
         String url = GET_WEATHER_URL + locationKey;
         String charset = StandardCharsets.UTF_8.name();
-        String query = String.format("apikey=%s", URLEncoder.encode(API_KEY, charset));
+        String query = String.format("apikey=%s", URLEncoder.encode(apiKey, charset));
 
         URLConnection connection = getUrlConnection(url, query);
         StringBuilder response = getResponse(connection);

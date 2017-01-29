@@ -1,9 +1,13 @@
 package org.k.dto;
 
-public class TopicDto {
-    private String topic;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    public TopicDto(String topic) {
+public class TopicDto {
+    private final String topic;
+
+    @JsonCreator
+    public TopicDto(@JsonProperty("topic") String topic) {
         this.topic = topic;
     }
 

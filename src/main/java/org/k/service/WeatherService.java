@@ -42,7 +42,6 @@ public class WeatherService {
         if (!topics.isEmpty()) {
             logger.info("Topics: {}", topics);
             kafkaProducerService.sendWeatherMessages(getMapOfMessages());
-            logger.info("Messages are sent to topics: {}", topics);
         } else {
             logger.info("No topics found...");
         }

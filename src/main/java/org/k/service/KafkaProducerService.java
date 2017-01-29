@@ -27,8 +27,8 @@ public class KafkaProducerService {
     private final Producer<String, String> producer;
     private final ObjectMapper objectMapper;
 
-    private KafkaProducerService(ObjectMapper objectMapper,
-                                 @Value("${kafka.address}") String address) throws IOException {
+    private KafkaProducerService(@Value("${kafka.address}") String address,
+                                 ObjectMapper objectMapper) throws IOException {
         this.objectMapper = objectMapper;
         Properties props = new Properties();
         props.put("bootstrap.servers", address);
@@ -54,14 +54,11 @@ public class KafkaProducerService {
     public void sendWeatherMessages(Map<String, Weather> messages) {
         logger.info("Sending weather messages...");
         for (Map.Entry message : messages.entrySet()) {
+            logger.info("Send message for topic: {}", message.getKey());
             try {
-                logger.info("Send message for topic: {}", message.getKey());
                 producer.send(new ProducerRecord<>(message.getKey().toString(),
                         objectMapper.writeValueAsString(message.getValue())));
-                logger.info("Message sent for topic: {}. Message: {}", message.getKey(),
-                        message.getValue());
             } catch (JsonProcessingException e) {
-                logger.error(e.getMessage(), e);
                 throw new UnknownException("JsonProcessingException while parsing " +
                         message.getValue());
             }
