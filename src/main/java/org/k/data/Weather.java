@@ -11,7 +11,11 @@ public class Weather {
     private final String localObservationDateTime;
     private final String epochTime;
     private final String weatherText;
+
+    @JsonProperty("temperatureC")
     private final String temperatureC;
+
+    @JsonProperty("temperatureF")
     private final String temperatureF;
 
     @JsonCreator
@@ -38,12 +42,12 @@ public class Weather {
         return weatherText;
     }
 
-    public String getTemperatureF() {
-        return temperatureF;
-    }
-
     private String getTemperatureC() {
         return temperatureC;
+    }
+
+    public String getTemperatureF() {
+        return temperatureF;
     }
 
     @Override
