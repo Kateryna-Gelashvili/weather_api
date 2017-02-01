@@ -4,6 +4,7 @@ import org.k.data.Location;
 import org.k.data.Weather;
 import org.k.exception.UnknownException;
 import org.k.exception.WeatherServiceException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -23,9 +24,12 @@ public class AccuWeatherApiService {
     private static final String SEARCH = "/search";
     private static final String GET_WEATHER_URL = "http://dataservice.accuweather.com/currentconditions/v1/";
     private final String apiKey;
+    private final RestTemplate restTemplate;
 
-    public AccuWeatherApiService(@Value("${api.key}") String apiKey) {
+    @Autowired
+    public AccuWeatherApiService(@Value("${api.key}") String apiKey, RestTemplate restTemplate) {
         this.apiKey = apiKey;
+        this.restTemplate = restTemplate;
     }
 
     public Optional<Location> getLocation(String countryCode, String city) throws IOException {
@@ -34,7 +38,6 @@ public class AccuWeatherApiService {
                 .queryParam("apikey", apiKey)
                 .queryParam("q", city);
 
-        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<List<Location>> response = restTemplate.exchange(
                 uriBuilder.build().encode().toUri(),
                 HttpMethod.GET, null,
@@ -53,7 +56,6 @@ public class AccuWeatherApiService {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(GET_WEATHER_URL + locationKey)
                 .queryParam("apikey", apiKey);
 
-        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<List<Weather>> response = restTemplate.exchange(
                 uriBuilder.build().encode().toUri(),
                 HttpMethod.GET, null,
